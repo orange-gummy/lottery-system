@@ -36,14 +36,14 @@ def command():
 
 def value_setting():# 定数の定義
     # 定数をグローバス変数として宣言
-    global GROUPS_APPLIED_CLASS
-    global NUMBER_OF_WINNERS
-    global SECOND_PROBABILITY
+    global grpous_applied_class
+    global number_of_winners
+    global second_probability
     
     #　定数を設定
-    GROUPS_APPLIED_CLASS = ['5A','5B','5C','5D','6A','6B','6C','6D']# 劇をするクラスのlist
-    NUMBER_OF_WINNERS = 40# クラスごとの当選者の数
-    SECOND_PROBABILITY = 0.5# 一回当選した人が二回目以降に当選する確率
+    grpous_applied_class = ['5A','5B','5C','5D','6A','6B','6C','6D']# 劇をするクラスのlist
+    number_of_winners = 40# クラスごとの当選者の数
+    second_probability = 0.5# 一回当選した人が二回目以降に当選する確率
 
 def GUI():#GUI
     #　ここからテータを取り出すためにテキストボックスをグローバル変数とする
@@ -171,11 +171,11 @@ def lottery_preparation():# lottryの準備
     
     df_ = df.copy()# 実際にいじるデータにコピー
     df_["decided"] = "Not yet"
-    restNum = [NUMBER_OF_WINNERS,NUMBER_OF_WINNERS,NUMBER_OF_WINNERS,NUMBER_OF_WINNERS,NUMBER_OF_WINNERS,NUMBER_OF_WINNERS,NUMBER_OF_WINNERS,NUMBER_OF_WINNERS]
+    restNum = [number_of_winners,number_of_winners,number_of_winners,number_of_winners,number_of_winners,number_of_winners,number_of_winners,number_of_winners]
     # resutNumはクラスごとの残りの枠　初期値はnumber_of_winner
 
 def lottery(stage):# 抽選 stage=希望クラスの列の見出し
-    for i, group in enumerate(GROUPS_APPLIED_CLASS):# groupに劇のクラスを代入して実行を繰り返す
+    for i, group in enumerate(grpous_applied_class):# groupに劇のクラスを代入して実行を繰り返す
         cond = (df_[stage] == group)&(df_["decided"] == "Not yet")# 全員のdecidedに'Not yet'を入れる
         dfM = df_[cond]# そのクラスに希望した人のみのデータ
         
@@ -189,9 +189,8 @@ def lottery(stage):# 抽選 stage=希望クラスの列の見出し
             if Number_of_lottery != '1回目':#2回目以降の確率を下げる処理
                 for index in ind:#一回当たったことがある人を一定の確率で抜く
                     if index in list_of_winners:
-                        continue
-                    if random.random() > SECOND_PROBABILITY:
-                        ind.remove(index)
+                        if random.random() > second_probability:
+                            ind.remove(index)
             
             
             if len(ind) >= restNum[i]:#抜いたデータが枠よりまだ大きい場合
@@ -203,26 +202,24 @@ def lottery(stage):# 抽選 stage=希望クラスの列の見出し
                 restNum[i] -= len(ind)#残りの枠の計算
 
 def rest_lottery():# 枠の余ったクラスの抽選　完全ランダム
-     for i, group in enumerate(GROUPS_APPLIED_CLASS):# groupに劇のクラスの残りの枠代入して実行を繰り返す
-        if restNum[i] != 0:#まだ枠のが残っていた場合
-            cond = (df_["decided"] == "Not yet")# まだ決まっていない人
-            dfM = df_[cond]
-            ind = list(dfM.index.values)
-            if Number_of_lottery != '1回目':#2回目以降の抽選の場合
+     for i, group in enumerate(grpous_applied_class):# groupに劇のクラスの残りの枠代入して実行を繰り返す
+         if restNum[i] != 0:#まだ枠のが残っていた場合
+             cond = (df_["decided"] == "Not yet")# まだ決まっていない人
+             dfM = df_[cond]
+             ind = list(dfM.index.values)
+             if Number_of_lottery != '1回目':#2回目以降の抽選の場合
                 for index in ind:
                     if index in list_of_winners:
-                        continue
-                    if random.random() > SECOND_PROBABILITY:
-                        ind.remove(index)
-            if len(ind) >= restNum[i]:#残りの人から一回当選した人を抜いた人数が残りの枠より多かった場合(普通は必ずこうなる)
-                sel = random.sample(ind,restNum[i])# 希望した人indexから枠の数取り出す
-                df_.loc[sel,"decided"] = group# 当たった人のdecidedに希望するクラス名を入れる
-                restNum[i] = 0# 残りの枠は0
-            else:
-                ind_ = list(dfM.index.values)
-                sel = random.sample(ind_,restNum[i])# 希望した人indexから枠の数取り出す
-                df_.loc[sel,"decided"] = group
-                restNum[i] = 0# 残りの枠は0
+                        if random.random() > second_probability:
+                            ind.remove(index)
+             if len(ind) >= restNum[i]:#残りの人から一回当選した人を抜いた人数が残りの枠より多かった場合(普通は必ずこうなる)
+                 sel = random.sample(ind,restNum[i])# 希望した人indexから枠の数取り出す
+                 df_.loc[sel,"decided"] = group# 当たった人のdecidedに希望するクラス名を入れる
+                 restNum[i] = 0# 残りの枠は0
+                 ind_ = list(dfM.index.values)
+                 sel = random.sample(ind_,restNum[i])# 希望した人indexから枠の数取り出す
+                 df_.loc[sel,"decided"] = group
+                 restNum[i] = 0# 残りの枠は0
 
 def output():#出力に表示する
     txt2.delete('1.0', tk.END) #テキストボックスを空にする
@@ -235,7 +232,7 @@ def output():#出力に表示する
     for name, group in df__.groupby('decided'):# 当選クラスごとに分割
         df_dict[name] = group
         
-    for key in GROUPS_APPLIED_CLASS:# クラスごとに当選者を呼び出す
+    for key in grpous_applied_class:# クラスごとに当選者を呼び出す
         txt2.insert('end','●' + key + 'の劇の当選者：')
         txt2.insert('end',df_dict[key].to_csv(path_or_buf=None , mode='a' , columns=['output'] , encoding='shift jis' , header=False , index=False , line_terminator='、'))
         txt2.insert('end','\n')
