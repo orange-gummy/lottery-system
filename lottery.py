@@ -189,8 +189,9 @@ def lottery(stage):# 抽選 stage=希望クラスの列の見出し
             if Number_of_lottery != '1回目':#2回目以降の確率を下げる処理
                 for index in ind:#一回当たったことがある人を一定の確率で抜く
                     if index in list_of_winners:
-                        if random.random() > SECOND_PROBABILITY:
-                            ind.remove(index)
+                        continue
+                    if random.random() > SECOND_PROBABILITY:
+                        ind.remove(index)
             
             
             if len(ind) >= restNum[i]:#抜いたデータが枠よりまだ大きい場合
